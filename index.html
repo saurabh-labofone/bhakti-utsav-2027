@@ -222,6 +222,7 @@ html.idle #playB.ended{opacity:1;pointer-events:auto}
   <div class="abs blk" style="left:140px;top:120px;width:1600px">
     <div class="k"><i></i><span>The journey</span></div>
     <h2 class="h sp">Five cities. One devotion.</h2>
+    <p class="p s4-when"><span style="color:var(--ivory)">25 January – 3 February 2027</span> · dates to be confirmed</p>
   </div>
   <svg class="ln abs s4-svg" style="left:0;top:0" width="1920" height="1080"><line x1="260" y1="620" x2="1460" y2="620"/></svg>
   <div class="dash s4-dash" style="left:1472px;top:619px;width:236px"></div>
@@ -280,7 +281,7 @@ html.idle #playB.ended{opacity:1;pointer-events:auto}
     <div class="abs t-text" style="left:40px;top:40px;width:360px">
       <div style="font:500 42px/1.05 'CG',serif">Bhakti Utsav</div>
       <div class="dev" style="font-size:24px;color:var(--gold);margin-top:10px">एक भारत, अनेक सुर</div>
-      <div style="font:400 20px/1.4 'IN';color:var(--muted);margin-top:30px">One ticket</div>
+      <div class="t-per" style="font:400 20px/1.4 'IN';color:var(--muted);margin-top:30px"></div>
     </div>
     <div class="abs stub" style="left:420px;top:0;width:160px;height:230px">
       <svg class="abs" style="left:0;top:0;overflow:visible" width="160" height="230"><path d="M0,0 H160 V230 H0 V135 A20,20 0 0 0 0,95 Z"/></svg>
@@ -362,8 +363,9 @@ gsap.registerPlugin(SplitText, DrawSVGPlugin, CustomEase);
 CustomEase.create('cloth', 'M0,0 C0.3,0 0.12,1 1,1');
 
 /* ---------- the numbers on the Seva slide: change them here only ---------- */
-const SEVA = { perTicket: 25, seats: 2000, step: 1000 };
-SEVA.perStep = SEVA.perTicket * SEVA.step;   // the same money as Way 1, paid out in milestones
+// Way 1: ₹share from every ₹per of a ticket (25 of 1,000 = 2.5%).
+// Way 2: every `step` tickets sold unlock ₹perStep. The two ways are set apart.
+const SEVA = { share: 25, per: 1000, seats: 2000, step: 1000, perStep: 25000 };
 
 /* ---------- how long each slide stays on screen when the film plays (seconds) ---------- */
 const DUR = [9, 7.5, 8.5, 9, 11, 9.5, 12, 13.5, 11];
@@ -481,7 +483,8 @@ function buildContent() {
 
   // two ways: the words carry the numbers from SEVA
   const s8 = $(document, '#s8');
-  $(s8, '.w1-line').innerHTML = `<span class="rs">₹</span>${SEVA.perTicket} from every ticket.<br>A full hall of ${inr(SEVA.seats)} gives <span class="rs">₹</span>${inr(SEVA.perTicket * SEVA.seats)}.`;
+  $(s8, '.t-per').innerHTML = `From every <span class="rs">₹</span>${inr(SEVA.per)} of a ticket`;
+  $(s8, '.w1-line').innerHTML = `<span class="rs">₹</span>${SEVA.share} from every <span class="rs">₹</span>${inr(SEVA.per)} of a ticket.<br>That is ${+(SEVA.share / SEVA.per * 100).toFixed(2)}% of every ticket, in every city.`;
   $(s8, '.w2-line').innerHTML = `Every ${inr(SEVA.step)} tickets sold unlock <span class="rs">₹</span>${inr(SEVA.perStep)}.<br>Each city watches its count rise.`;
   $(s8, '.m1 .a').innerHTML = $(s8, '.m2 .a').innerHTML = `<span class="rs" style="font-size:.8em">₹</span>${inr(SEVA.perStep)}`;
   $(s8, '.t1 .b').textContent = inr(SEVA.step);
@@ -584,7 +587,7 @@ const BUILD = [
     tl.fromTo($$(S, '.t-main path, .stub path'), { fillOpacity: 0 }, { fillOpacity: 1, duration: 1 }, t + 1.9)
       .fromTo($(S, '.t-text'), { opacity: 0 }, { opacity: 1, duration: 1 }, t + 2.0)
       .fromTo($(S, '.perf'), { opacity: 0 }, { opacity: 1, duration: .6 }, t + 2.2);
-    counter(tl, $(S, '.nper'), t + 2.1, v => Math.round(SEVA.perTicket * v), 1.4);
+    counter(tl, $(S, '.nper'), t + 2.1, v => Math.round(SEVA.share * v), 1.4);
     tl.fromTo($(S, '.stub'), { x: 0, y: 0, rotation: 0 }, { x: 70, y: -18, rotation: 6, duration: 1.3, ease: 'expo.out', transformOrigin: '0% 100%' }, t + 3.4);
     fade(tl, $(S, '.w1-line'), t + 3.0);
     // way 2: seats fill, each milestone lights up
